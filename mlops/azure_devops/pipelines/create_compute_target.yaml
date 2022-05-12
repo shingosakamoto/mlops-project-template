@@ -1,0 +1,52 @@
+# Copyright (c) Microsoft Corporation. All rights reserved.
+# Licensed under the MIT License.
+
+name: Create Compute Target
+
+variables:
+- ${{ if eq(variables['Build.SourceBranchName'], 'main') }}:
+    # 'main' branch: PRD environment
+    - template: ../config/config-infra-prod.yml
+- ${{ if ne(variables['Build.SourceBranchName'], 'main') }}:
+    # 'develop' or feature branches: DEV environment
+    - template: ../config/config-infra-dev.yml
+
+parameters:
+- name: cluster_name
+  type: string
+- name: size
+  type: string
+  default: Standard_D2_v3
+- name: min_instances
+  type: number
+  default: 0
+- name: max_instances
+  type: number
+  default: 1
+- name: version
+  type: string
+  displayName: Submission Method
+  default: aml-cli-v2
+  values:
+  - aml-cli-v2
+  - aml-python-sdk
+
+
+trigger:
+- none
+
+pool:
+  vmImage: ubuntu-20.04
+
+steps:
+- checkout: self
+  path: s/
+
+- template: ../templates/${{ parameters.version }}/install-aml.yml
+- template: ../templates/${{ parameters.version }}/connect-to-workspace.yml
+- template: ../templates/${{ parameters.version }}/create-compute.yml
+  parameters:
+    size: ${{ parameters.size }}
+    cluster_name: ${{ parameters.cluster_name }}
+    min_instances: ${{ parameters.min_instances }}
+    max_instances: ${{ parameters.max_instances }}

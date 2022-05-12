@@ -1,0 +1,6 @@
+# Ignore everything inside this folder
+*
+*/
+# Except this one file to keep the folder in git
+!.gitignore
+!README.md

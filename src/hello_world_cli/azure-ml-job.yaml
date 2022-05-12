@@ -1,0 +1,19 @@
+# Tells Azure ML what kind of YAML this is.
+#  Docs: https://docs.microsoft.com/en-us/azure/machine-learning/reference-yaml-job-command
+$schema: https://azuremlschemas.azureedge.net/latest/commandJob.schema.json
+
+# Name of the experiment where all jobs will end up in the Azure ML dashboard
+experiment_name: hello-world
+
+# What to run
+command: >-
+  python main.py --greeting ${{inputs.greeting}}
+inputs:
+  greeting: Hello
+
+# Where to run it
+environment: azureml:hello-world-environment@latest
+
+code: .
+
+compute: azureml:cpu-cluster

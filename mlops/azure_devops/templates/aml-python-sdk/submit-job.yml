@@ -1,0 +1,22 @@
+# Copyright (c) Microsoft Corporation. All rights reserved.
+# Licensed under the MIT License.
+
+parameters:
+- name: experiment_name
+  type: string
+- name: submission_filename
+  type: string
+
+steps:
+  - task: AzureCLI@2
+    displayName: Run Azure ML job
+    continueOnError: true
+    inputs:
+      azureSubscription: $(ado_service_connection_rg) #needs to have access at the RG level
+      scriptType: bash
+      scriptLocation: inlineScript
+      workingDirectory: '$(System.DefaultWorkingDirectory)/src/${{ parameters.experiment_name }}'
+      inlineScript: |
+        echo ${{ variables.experiment_name }}
+        python ${{ parameters.submission_filename }}
+

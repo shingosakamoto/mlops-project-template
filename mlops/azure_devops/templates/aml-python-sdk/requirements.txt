@@ -1,0 +1,2 @@
+azureml-core
+func_to_script

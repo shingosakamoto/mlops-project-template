@@ -141,3 +141,6 @@ terraform.tfvars
 
 /infrastructure/bicep/main.json
 ! /infrastructure/bicep/bicepconfig.json
+
+# pycharm files
+.idea/*

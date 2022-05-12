@@ -1,0 +1,55 @@
+# Copyright (c) Microsoft Corporation. All rights reserved.
+# Licensed under the MIT License.
+
+name: Submit AzureML Experiment
+
+variables:
+- ${{ if eq(variables['Build.SourceBranchName'], 'main') }}:
+    # 'main' branch: PRD environment
+    - template: ../config/config-infra-prod.yml
+- ${{ if ne(variables['Build.SourceBranchName'], 'main') }}:
+    # 'develop' or feature branches: DEV environment
+    - template: ../config/config-infra-dev.yml
+
+parameters: 
+- name: version
+  type: string
+  displayName: Submission Method
+  default: aml-cli-v2
+  values:
+  - aml-cli-v2
+  - aml-python-sdk
+- name: experiment_name
+  type: string
+  default: hello_world_cli
+- name: submission_filename
+  displayName: Submission file name
+  type: string
+  default: azure-ml-job.yaml
+
+trigger:
+- none
+
+pool:
+  vmImage: ubuntu-20.04
+
+steps:
+- checkout: self
+  path: s/
+
+- task: AzureCLI@2
+  displayName: EchoExperiment
+  continueOnError: true
+  inputs:
+    azureSubscription: $(ado_service_connection_rg) #needs to have access at the RG level
+    scriptType: bash
+    scriptLocation: inlineScript
+    inlineScript: |
+      echo Submitting Experiment ${{ parameters.experiment_name }}
+
+- template: ../templates/${{ parameters.version }}/install-aml.yml
+- template: ../templates/${{ parameters.version }}/connect-to-workspace.yml
+- template: ../templates/${{ parameters.version }}/submit-job.yml
+  parameters:
+    experiment_name: ${{ parameters.experiment_name }}
+    submission_filename: ${{ parameters.submission_filename }}

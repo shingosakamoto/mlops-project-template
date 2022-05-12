@@ -1,0 +1,15 @@
+$schema: https://azuremlschemas.azureedge.net/latest/commandJob.schema.json
+# Experiment info
+experiment_name: train-mnist-pytorch
+
+# What to run
+command: >-
+  python train.py
+
+# Where to run it
+environment:
+  build:
+    path: ./environment
+code: .
+
+compute: azureml:gpu-single-1
